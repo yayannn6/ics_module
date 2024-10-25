@@ -20,7 +20,7 @@ class AccountMove(models.Model):
             if rec.is_double_currency:
                 for line in rec.invoice_line_ids:
                     line.price_unit_currency = line.price_unit * rec.rate
-                    line.subtotal_other_currency = line.total_amount * rec.rate
+                    line.subtotal_other_currency = line.price_subtotal * rec.rate
                     untaxed += line.subtotal_other_currency
 
                 rec.untaxed_other_cur = untaxed
