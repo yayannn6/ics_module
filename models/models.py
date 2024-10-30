@@ -24,7 +24,7 @@ class AccountMove(models.Model):
                     untaxed += line.subtotal_other_currency
 
                 rec.untaxed_other_cur = untaxed
-                rec.total_tax_other_cur = untaxed * 8 / 100
+                rec.total_tax_other_cur = untaxed * 9 / 100
                 rec.total_other_cur = untaxed + rec.total_tax_other_cur
 
 
