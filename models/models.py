@@ -8,7 +8,7 @@ class AccountMove(models.Model):
 
     is_double_currency  = fields.Boolean("Double Currency")
     other_currency      = fields.Many2one("res.currency", string="Other Currency")
-    rate                = fields.Float("Rate")
+    rate                = fields.Float("Rate", digits=(16, 4))
     total_other_cur     = fields.Monetary("Total")
     total_tax_other_cur = fields.Monetary("Tax Total")
     untaxed_other_cur   = fields.Monetary("Amount untaxed")
