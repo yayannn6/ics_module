@@ -17,17 +17,18 @@ class AccountMove(models.Model):
     @api.onchange('rate', 'invoice_line_ids')
     def onchange_rate(self):
         for rec in self:
-            untaxed = Decimal(0)
+            untaxed = 0.0  # Tetap gunakan float
             if rec.is_double_currency:
                 for line in rec.invoice_line_ids:
-                    # Konversi hasil ke Decimal dan gunakan ROUND_DOWN
-                    line.price_unit_currency = Decimal(line.price_unit * rec.rate).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
-                    line.subtotal_other_currency = Decimal(line.price_subtotal * rec.rate).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+                    # Kalkulasi dengan pembulatan langsung ke dua desimal
+                    line.price_unit_currency = round(line.price_unit * rec.rate, 2)
+                    line.subtotal_other_currency = round(line.price_subtotal * rec.rate, 2)
                     untaxed += line.subtotal_other_currency
     
-                rec.untaxed_other_cur = untaxed.quantize(Decimal('0.01'), rounding=ROUND_DOWN)
-                rec.total_tax_other_cur = (untaxed * Decimal('0.09')).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
-                rec.total_other_cur = (untaxed + rec.total_tax_other_cur).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+                rec.untaxed_other_cur = round(untaxed, 2)
+                rec.total_tax_other_cur = round(untaxed * 0.09, 2)
+                rec.total_other_cur = round(untaxed + rec.total_tax_other_cur, 2)
+
 
 
 
