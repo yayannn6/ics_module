@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from decimal import Decimal, ROUND_DOWN
 
 
 class AccountMove(models.Model):
@@ -16,16 +17,17 @@ class AccountMove(models.Model):
     @api.onchange('rate', 'invoice_line_ids')
     def onchange_rate(self):
         for rec in self:
-            untaxed = 0
+            untaxed = Decimal(0)
             if rec.is_double_currency:
                 for line in rec.invoice_line_ids:
-                    line.price_unit_currency = line.price_unit * rec.rate
-                    line.subtotal_other_currency = line.price_subtotal * rec.rate
+                    # Konversi hasil ke Decimal dan gunakan ROUND_DOWN
+                    line.price_unit_currency = Decimal(line.price_unit * rec.rate).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+                    line.subtotal_other_currency = Decimal(line.price_subtotal * rec.rate).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
                     untaxed += line.subtotal_other_currency
-
-                rec.untaxed_other_cur = untaxed
-                rec.total_tax_other_cur = untaxed * 9 / 100
-                rec.total_other_cur = untaxed + rec.total_tax_other_cur
+    
+                rec.untaxed_other_cur = untaxed.quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+                rec.total_tax_other_cur = (untaxed * Decimal('0.09')).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+                rec.total_other_cur = (untaxed + rec.total_tax_other_cur).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
 
 
 
